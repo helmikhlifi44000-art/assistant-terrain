@@ -297,18 +297,16 @@ export default function AssistantTerrain() {
     setInput("");
     setLoading(true);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
           system: SYSTEM_PROMPT + `\n\nÉquipement sélectionné : ${selectedEquip?.label}`,
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.content?.[0]?.text || "Erreur." }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.choices?.[0]?.message?.content || "Erreur." }]);
     } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "❌ Erreur réseau." }]);
     } finally {
